@@ -1,0 +1,122 @@
+{% extends 'base.html' %} {% block content %}
+  {% load static %}
+  <div>
+    <div class="main">
+      <div class="content-wrapper">
+        <div class="row">
+          <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Default form</h4>
+                <p class="card-description">Basic form layout</p>
+                <form class="forms-sample" method="post">
+                  {% csrf_token %}
+                    <div class="form-group" id="id">
+                        <label>Products</label>
+                        {{form.product}}
+                      </div>
+                    <div class="form-group">
+                        <label >quantiy</label>
+                        {{form.quantity}}
+                      </div>
+                    <div class="form-group">
+                    <label>VAT%</label>
+                    {{form.vat}}
+                  </div>
+                  <div class="form-group">
+                    <label>TAX% (optional)</label>
+                    {{form.tax}}
+                  </div>
+                  <div class="form-group">
+                    <label >Discount% (optional)</label>
+                    {{form.discount}}
+                  </div>
+                  <div class="form-group">
+                    <label >customer Name</label>
+                    {{form.customer}}
+                  </div>
+                  <div class="form-group">
+                    <label >Contact Number</label>
+                    {{form.contact}}
+                  </div>
+                  <div class="form-group">
+                    <label >Account Number</label>
+                    {{form.account_no}}
+                  </div>
+                  <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                  <button class="btn btn-light" onclick="this.form.reset();">Cancel</button>
+                </form>
+              </div>
+            </div>
+        </div>
+          <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Horizontal Data</h4>
+                <p class="card-description">Horizontal Data Layout</p>
+                <label><b>product</b></label>
+                <ul style="list-style-type: none;">
+                    <li>name: <span id="name"></span></li>
+                    <li>brand: <span id="brand"></span></li>
+                    <li>cost price: <span id="cprice"></span></li>
+                    <li>selling price: <span id="sprice"></span></li>
+                    <li>category: <span id="category"></span></li>
+                    <li>subcategory: <span id="subcat"></span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- content-wrapper ends -->
+      <!-- partial:../../partials/_footer.html -->
+      <footer class="footer">
+        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+          <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021. Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
+          <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
+        </div>
+      </footer>
+      <!-- partial -->
+    </div>
+    <!-- main-panel ends -->
+  </div>
+
+<script>
+  $.ajax('http://127.0.0.1:8000/product/products', {  // url is either given here
+    type: 'GET',  // http method
+    success: function (data, status, xhr) {
+        //console.log(data);
+            var text = [];
+            for (const key in data) {
+              text.push(data[key].pk);
+            }
+            $("select.data").change(function() {
+                var selectedproduct = $(this).children("option:selected").val();
+                //console.log(selectedproduct);
+                var filteredData = data.products.filter(function(product){
+                  return product.id == selectedproduct;
+                });
+                var bran = data.brands.filter(function(brand){
+                  return brand.id == filteredData[0].brand_id;
+                });
+                var subcat = data.subcategory.filter(function(sub){
+                  return sub.id == filteredData[0].subcategory_id;
+                });
+                var categ = data.category.filter(function(cat){
+                  return cat.id == subcat[0].category_id;
+                });
+                $("#name").text(filteredData[0].name);
+                $("#brand").text(bran[0].name);
+                $("#cprice").text(filteredData[0].cost_price);
+                $("#sprice").text(filteredData[0].selling_price);
+                $("#category").text(categ[0].category);
+                $("#subcat").text(subcat[0].subcategory);
+            });
+
+    },
+        error: function (jqXhr, textStatus, errorMessage) {
+                alert('error occur');
+        }
+});
+  </script>
+{% endblock %}
